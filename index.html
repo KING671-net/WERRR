@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WER 13 STR | Blockchain Links</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --secondary: #00b8ff;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --block: #1a1a3a;
+            --chain: #3a3a5a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: var(--darker);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(-30px);
+            transition: all 1s ease;
+        }
+        
+        .header.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            margin: 0 auto 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            background-color: var(--dark);
+            padding: 5px;
+            transform: scale(0);
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .header.visible .profile-img {
+            transform: scale(1);
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 1px;
+        }
+        
+        .blockchain {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 40px 0;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 1s ease 0.3s;
+        }
+        
+        .blockchain.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .block-row {
+            display: flex;
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .block {
+            width: 120px;
+            height: 120px;
+            background: var(--block);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+            margin: 0 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .blockchain.visible .block {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .block:nth-child(1) { transition-delay: 0.4s; }
+        .block:nth-child(2) { transition-delay: 0.6s; }
+        .block:nth-child(3) { transition-delay: 0.8s; }
+        .block:nth-child(4) { transition-delay: 1.0s; }
+        .block:nth-child(5) { transition-delay: 1.2s; }
+        .block:nth-child(6) { transition-delay: 1.4s; }
+        .block:nth-child(7) { transition-delay: 1.6s; }
+        .block:nth-child(8) { transition-delay: 1.8s; }
+        
+        .block:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
+            border-color: var(--primary);
+        }
+        
+        .block i {
+            font-size: 30px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .block:hover i {
+            transform: scale(1.2);
+        }
+        
+        .block .platform {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 3px;
+        }
+        
+        .block .username {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .chain {
+            position: absolute;
+            background-color: var(--chain);
+            z-index: 1;
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+        
+        .blockchain.visible .chain {
+            opacity: 1;
+        }
+        
+        .horizontal-chain {
+            height: 8px;
+            width: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .vertical-chain {
+            width: 8px;
+            height: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .chain-link {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--chain);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .blockchain.visible .chain-link {
+            opacity: 1;
+        }
+        
+        .block.active {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            animation: pulse 0.5s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .chain.active, .chain-link.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+            animation: chainPulse 0.5s ease;
+        }
+        
+        @keyframes chainPulse {
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
+        
+        .tiktok { color: #69c9d0; }
+        .instagram { color: #e1306c; }
+        .twitter { color: #1da1f2; }
+        .whatsapp { color: #25d366; }
+        .telegram { color: #0088cc; }
+        .shop { color: #ff9900; }
+        .blockchain-edu { color: #8a2be2; }
+        .sponsor { color: #00a8ff; }
+        
+        .footer {
+            margin-top: 50px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease 1.6s;
+        }
+        
+        .footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Click animation */
+        .click-effect {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(0, 255, 136, 0.6);
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0);
+            animation: clickExpand 0.5s ease-out;
+            z-index: 100;
+        }
+        
+        @keyframes clickExpand {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(10); opacity: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            .block-row {
+                flex-direction: column;
+                margin: 15px 0;
+            }
+            
+            .block {
+                margin: 15px 0;
+                transition-delay: 0s !important;
+            }
+            
+            .block:nth-child(1) { transition-delay: 0.4s !important; }
+            .block:nth-child(2) { transition-delay: 0.6s !important; }
+            .block:nth-child(3) { transition-delay: 0.8s !important; }
+            
+            .horizontal-chain {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://i.postimg.cc/mgG0vPcR/file-000000007b7861f98a3dafadfa746fbc.png" class="profile-img" alt="WER 13 STR Logo">
+        <h1>WER 13 STR</h1>
+        <p>BLOCKCHAIN CONNECTION LINKS</p>
+    </div>
+    
+    <div class="blockchain">
+        <!-- First Row -->
+        <div class="block-row">
+            <div class="block" data-link="https://www.tiktok.com/@werxdrops?_t=ZS-8ybKUEudWVB&_r=1">
+                <i class="fab fa-tiktok tiktok"></i>
+                <div class="platform">TikTok</div>
+                <div class="username">WER13STR</div>
+            </div>
+            
+            <div class="chain horizontal-chain" style="left: 140px;"></div>
+            <div class="chain-link" style="left: 140px; top: 50%;"></div>
+            
+            <div class="block" data-link="https://www.instagram.com/wer13str?igsh=MTE4bWZlZTBiZTV5bw==">
+                <i class="fab fa-instagram instagram"></i>
+                <div class="platform">Instagram</div>
+                <div class="username">WER13STR</div>
+            </div>
+            
+            <div class="chain horizontal-chain" style="left: 300px;"></div>
+            <div class="chain-link" style="left: 300px; top: 50%;"></div>
+            
+            <div class="block" data-link="https://x.com/UncekR23817?t=GG205n8AjInS7TWZEmHPfw&s=09">
+                <i class="fab fa-twitter twitter"></i>
+                <div class="platform">Twitter</div>
+                <div class="username">WER13STR</div>
+            </div>
+        </div>
+        
+        <div class="chain vertical-chain" style="top: 170px;"></div>
+        <div class="chain-link" style="left: 50%; top: 170px;"></div>
+        
+        <!-- Second Row -->
+        <div class="block-row">
+            <div class="block" data-link="https://whatsapp.com/channel/0029Vb6IN6M4SpkGsj2dkd1V">
+                <i class="fab fa-whatsapp whatsapp"></i>
+                <div class="platform">WhatsApp</div>
+                <div class="username">Community</div>
+            </div>
+            
+            <div class="chain horizontal-chain" style="left: 140px;"></div>
+            <div class="chain-link" style="left: 140px; top: 50%;"></div>
+            
+            <div class="block" data-link="https://t.me/speedaidrop">
+                <i class="fab fa-telegram telegram"></i>
+                <div class="platform">Telegram</div>
+                <div class="username">Community</div>
+            </div>
+            
+            <div class="chain horizontal-chain" style="left: 300px;"></div>
+            <div class="chain-link" style="left: 300px; top: 50%;"></div>
+            
+            <div class="block" data-link="https://lynk.id/werstr">
+                <i class="fas fa-store shop"></i>
+                <div class="platform">Digital Shop</div>
+                <div class="username">WER13STR</div>
+            </div>
+        </div>
+        
+        <div class="chain vertical-chain" style="top: 340px;"></div>
+        <div class="chain-link" style="left: 50%; top: 340px;"></div>
+        
+        <!-- Third Row (MENGENAL BLOCKCHAIN) -->
+        <div class="block-row">
+            <div class="block" data-link="https://werochain.rf.gd/?i=1" style="width: 200px;">
+                <i class="fas fa-link blockchain-edu"></i>
+                <div class="platform">MENGENAL BLOCKCHAIN</div>
+                <div class="username">WERCHAIN</div>
+            </div>
+        </div>
+        
+        <div class="chain vertical-chain" style="top: 510px;"></div>
+        <div class="chain-link" style="left: 50%; top: 510px;"></div>
+        
+        <!-- Fourth Row (SPONSOR OKX) -->
+        <div class="block-row">
+            <div class="block" data-link="https://okx.ac/join/90280049" style="width: 200px;">
+                <i class="fas fa-handshake sponsor"></i>
+                <div class="platform">SPONSOR</div>
+                <div class="username">OKX</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>OKX WALLET | WER 13 STR © 2025</p>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set visible after load
+            setTimeout(() => {
+                document.querySelector('.header').classList.add('visible');
+                document.querySelector('.blockchain').classList.add('visible');
+                document.querySelector('.footer').classList.add('visible');
+            }, 300);
+            
+            const blocks = document.querySelectorAll('.block');
+            const chains = document.querySelectorAll('.chain');
+            const chainLinks = document.querySelectorAll('.chain-link');
+            
+            // Click effect animation
+            function createClickEffect(e) {
+                const effect = document.createElement('div');
+                effect.className = 'click-effect';
+                effect.style.left = `${e.clientX}px`;
+                effect.style.top = `${e.clientY}px`;
+                document.body.appendChild(effect);
+                
+                setTimeout(() => {
+                    effect.remove();
+                }, 500);
+            }
+            
+            // Function to activate chain animation
+            function activateChain(block) {
+                // Reset all active states
+                blocks.forEach(b => b.classList.remove('active'));
+                chains.forEach(c => c.classList.remove('active'));
+                chainLinks.forEach(cl => cl.classList.remove('active'));
+                
+                // Activate clicked block
+                block.classList.add('active');
+                
+                // Find all chains and links between this block and the first one
+                let currentBlock = block;
+                let activatedChains = [];
+                let activatedLinks = [];
+                
+                // Activate chains to the left
+                while (currentBlock.previousElementSibling && 
+                      currentBlock.previousElementSibling.classList.contains('block')) {
+                    const betweenChain = currentBlock.previousElementSibling.nextElementSibling;
+                    const betweenLink = betweenChain.nextElementSibling;
+                    
+                    if (betweenChain.classList.contains('chain')) {
+                        activatedChains.push(betweenChain);
+                        activatedLinks.push(betweenLink);
+                    }
+                    
+                    currentBlock.previousElementSibling.classList.add('active');
+                    currentBlock = currentBlock.previousElementSibling;
+                }
+                
+                // Reset current block
+                currentBlock = block;
+                
+                // Activate chains to the right
+                while (currentBlock.nextElementSibling && 
+                      currentBlock.nextElementSibling.classList.contains('block')) {
+                    const betweenChain = currentBlock.nextElementSibling.previousElementSibling;
+                    const betweenLink = betweenChain.previousElementSibling;
+                    
+                    if (betweenChain.classList.contains('chain')) {
+                        activatedChains.push(betweenChain);
+                        activatedLinks.push(betweenLink);
+                    }
+                    
+                    currentBlock.nextElementSibling.classList.add('active');
+                    currentBlock = currentBlock.nextElementSibling;
+                }
+                
+                // Activate vertical chains if in different rows
+                const row = block.closest('.block-row');
+                if (row.previousElementSibling && row.previousElementSibling.classList.contains('block-row')) {
+                    const verticalChain = row.previousElementSibling.nextElementSibling;
+                    const verticalLink = verticalChain.nextElementSibling;
+                    activatedChains.push(verticalChain);
+                    activatedLinks.push(verticalLink);
+                }
+                
+                if (row.nextElementSibling && row.nextElementSibling.classList.contains('block-row')) {
+                    const verticalChain = row.nextElementSibling.previousElementSibling;
+                    const verticalLink = verticalChain.previousElementSibling;
+                    activatedChains.push(verticalChain);
+                    activatedLinks.push(verticalLink);
+                }
+                
+                // Activate all relevant chains and links
+                activatedChains.forEach(chain => {
+                    chain.classList.add('active');
+                });
+                
+                activatedLinks.forEach(link => {
+                    link.classList.add('active');
+                });
+            }
+            
+            // Add click event to blocks
+            blocks.forEach(block => {
+                block.addEventListener('click', function(e) {
+                    // Create click effect
+                    createClickEffect(e);
+                    
+                    // Activate chain animation
+                    activateChain(this);
+                    
+                    // Open link after short delay
+                    setTimeout(() => {
+                        window.open(this.getAttribute('data-link'), '_blank');
+                    }, 1000);
+                });
+            });
+            
+            // Initial animation
+            setTimeout(() => {
+                activateChain(blocks[0]);
+                
+                setTimeout(() => {
+                    blocks.forEach(b => b.classList.remove('active'));
+                    chains.forEach(c => c.classList.remove('active'));
+                    chainLinks.forEach(cl => cl.classList.remove('active'));
+                }, 2000);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
